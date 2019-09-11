@@ -38,15 +38,19 @@ def run(path):
 	else:
 		return("Visage trop petit.")
 
+from django.conf import settings
+from django.core.files.storage import default_storage
+
 @csrf_exempt
 def test(request):
 	if request.method == 'POST':
 		form = ImageFileUploadForm(request.POST, request.FILES)
 		if form.is_valid():
-			form.save()
-			#res = os.popen('cd opencv && python3 opencv.py' ).read()
-			res = run( os.path.join(BASE_DIR,'media/images/image.jpeg'))
-			Image.objects.all().delete()
+			s = len( ImageName.objects.all() )
+			imn = ImageName( name= 'image'+str(s+1)+'.jpeg' ).save()
+			save_path = os.path.join(settings.MEDIA_ROOT, 'images', 'image'+str(s)+'.jpeg')
+			path = default_storage.save(save_path, request.FILES['image'])
+			res = run( path)
 			return JsonResponse({'error': False, 'message': res})
 		else:
 			return JsonResponse({'error': True, 'errors': form.errors})
