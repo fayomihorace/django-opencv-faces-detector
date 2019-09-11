@@ -1,13 +1,14 @@
 import numpy as np
 import cv2, os
-
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 from django.shortcuts import render
 from django.http import  HttpResponse
 from .forms import ImageFileUploadForm
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
-
+face_cascade = cv2.CascadeClassifier( os.path.join(BASE_DIR, 'opencv/haarcascade_frontalface_default.xml'))
+eye_cascade = cv2.CascadeClassifier(os.path.join(BASE_DIR,'opencv/haarcascade_eye.xml'))
+from opencv.models import *
 def run(path):
 	img0 = cv2.imread(path)
 	#print(path)
@@ -27,23 +28,9 @@ def run(path):
 	faces = face_cascade.detectMultiScale(gray, 1.01, 5)
 	ratios = []
 	for (x,y,w,h) in faces:
-		"""
-	    img = cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
-	    roi_gray = gray[y:y+h, x:x+w]
-	    roi_color = img[y:y+h, x:x+w]
-	    eyes = eye_cascade.detectMultiScale(roi_gray)
-	    """
 	    surface = w*h
 	    ratios.append(surface0/surface)
-	    """
-	    for (ex,ey,ew,eh) in eyes:
-	        cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
-
-	cv2.imshow('img',img)
-	key = cv2.waitKey(0)
-	cv2.destroyAllWindows()
-	print(ratios)
-	"""
+	
 	if len(ratios)==0:
 		return('Aucun visage trouvé')
 	elif min(ratios) <= surfaceRatio: 
@@ -58,8 +45,8 @@ def test(request):
 		if form.is_valid():
 			form.save()
 			#res = os.popen('cd opencv && python3 opencv.py' ).read()
-			res = run('../media/images/image.jpeg')
-			os.popen('rm ../media/images/image.jpeg')
+			res = run( os.path.join(BASE_DIR,'media/images/image.jpeg'))
+			Image.objects.all().delete()
 			return JsonResponse({'error': False, 'message': res})
 		else:
 			return JsonResponse({'error': True, 'errors': form.errors})

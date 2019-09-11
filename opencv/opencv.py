@@ -48,3 +48,14 @@ def run(path):
 run('../media/images/image.jpeg')
 os.popen('rm ../media/images/image.jpeg')
 
+	faces = face_cascade.detectMultiScale(gray, 1.01, 5)
+	ratios = []
+	for (x,y,w,h) in faces:
+		surface = w*h
+		ratios.append(surface0/surface)
+	if len(ratios)==0:
+		return('Aucun visage trouvé')
+	elif min(ratios) <= surfaceRatio:
+		return('Visage trouvé')
+	else:
+		return("Visage trop petit.")
