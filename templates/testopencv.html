@@ -10,11 +10,10 @@
     <img src="" id="imageView">
     <h2 id="response"></h2>
    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"> </script>
-<script >
+<script>
 
 	function call_api(){
 		$('#response').text("")
-		//var fileInput = document.getElementById('testImageInput');
 		//on recupère l'image réduite
 		const image = document.getElementById('imageView')
 		var file= null
@@ -35,7 +34,6 @@
 	            contentType: false,
 	            processData: false
 	        });
-			//on appelle ensuite ll'api 
 		})
 
 	}
@@ -65,7 +63,7 @@
 	// https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
 	function readFile(e) {
 		//on fixe la largeur à  maximale 
-		const max = 150
+		const max = 550
 
 	    const fileName = e.target.files[0].name;
 	    const reader = new FileReader();
@@ -76,15 +74,14 @@
 	        // on affiche l'image initiale
 	        img.onload = () => {
 	                const elem = document.createElement('canvas');
-	                //Nouveau code---------
 	                var width = img.width
 	                var height = img.height
-	                console.log('width: '+width+', height: '+height)
-	                if( width< max ){
+	                console.log(`width: ${width}, height: ${height}`)
+	                if(width < max){
 	                	var r = max/width
 	                	height = r* height
 	                }
-	                else if( height < max ){
+	                else if(height < max) {
 	                	var r = max/height
 	                	width = r * width
 	                }
@@ -95,10 +92,9 @@
 	                }
 	                elem.width = width
 	                elem.height = height
-	                //Fin Nouveau code---------
 
 	                console.log('width: '+width+', height: '+height)
-	                
+
 	                const ctx = elem.getContext('2d');
 	                // img.width and img.height will contain the original dimensions
 	                ctx.drawImage(img, 0, 0, width, height);
@@ -109,20 +105,17 @@
 	                    });
 	                    console.log('file, '+file)
 	                }, 'image/jpeg', 1);
-	                //On récupère et affiche l'images réduite
 	                dataUrl = elem.toDataURL()
 	                document.getElementById('imageView').src = dataUrl;
 	                call_api()
 	                
 	            },
 	            reader.onerror = error => console.log(error);
-	            //$('#imageView').attr('src', img.src)
 	    };
 	}
 
 
 	document.getElementById('file').addEventListener('change', readFile, false);
-	//document.getElementById('saveImg').addEventListener('click', downloadFile, false);
 </script>
 
 </body>
